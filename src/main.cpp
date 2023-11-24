@@ -162,32 +162,52 @@ int main() {
     Buffer * buffer_0 = Buffer_init(obj);
 */
 
-    Vec3 ** controls = (Vec3 **) calloc(3, sizeof(Vec3 *));
+    Vec3 ** controls = (Vec3 **) calloc(5, sizeof(Vec3 *));
     
-    controls[0] = (Vec3 *) calloc(3, sizeof(Vec3));
-    controls[1] = (Vec3 *) calloc(3, sizeof(Vec3));
-    controls[2] = (Vec3 *) calloc(3, sizeof(Vec3));
+    controls[0] = (Vec3 *) calloc(5, sizeof(Vec3));
+    controls[1] = (Vec3 *) calloc(5, sizeof(Vec3));
+    controls[2] = (Vec3 *) calloc(5, sizeof(Vec3));
+    controls[3] = (Vec3 *) calloc(5, sizeof(Vec3));
+    controls[4] = (Vec3 *) calloc(5, sizeof(Vec3));
 
-    Vec3_set(&controls[0][0], -2.0f, -1.0f, -2.0f);
-    Vec3_set(&controls[0][1], -2.0f,  1.0f,  0.0f);
-    Vec3_set(&controls[0][2], -2.0f, -1.0f,  2.0f);
+    Vec3_set(&controls[0][0], -4.0f, -1.0f, -4.0f);
+    Vec3_set(&controls[0][1], -4.0f,  1.0f, -2.0f);
+    Vec3_set(&controls[0][2], -4.0f,  2.0f,  0.0f);
+    Vec3_set(&controls[0][3], -4.0f,  1.0f,  2.0f);
+    Vec3_set(&controls[0][4], -4.0f, -1.0f,  4.0f);
 
-    Vec3_set(&controls[1][0],  0.0f,  1.0f, -2.0f);
-    Vec3_set(&controls[1][1],  0.0f,  3.0f,  0.0f);
-    Vec3_set(&controls[1][2],  0.0f,  1.0f,  2.0f);
+    Vec3_set(&controls[1][0], -2.0f, -1.0f, -4.0f);
+    Vec3_set(&controls[1][1], -2.0f,  2.0f, -2.0f);
+    Vec3_set(&controls[1][2], -2.0f,  3.0f,  0.0f);
+    Vec3_set(&controls[1][3], -2.0f,  2.0f,  2.0f);
+    Vec3_set(&controls[1][4], -2.0f, -1.0f,  4.0f);
 
-    Vec3_set(&controls[2][0],  2.0f, -1.0f, -2.0f);
-    Vec3_set(&controls[2][1],  2.0f,  1.0f,  0.0f);
-    Vec3_set(&controls[2][2],  2.0f, -1.0f,  2.0f);
+    Vec3_set(&controls[2][0],  0.0f, -1.0f, -4.0f);
+    Vec3_set(&controls[2][1],  0.0f,  3.0f, -2.0f);
+    Vec3_set(&controls[2][2],  0.0f,  4.0f,  0.0f);
+    Vec3_set(&controls[2][3],  0.0f,  3.0f,  2.0f);
+    Vec3_set(&controls[2][4],  0.0f, -1.0f,  4.0f);
 
-    Surface3D * surface = Surface3D_init(controls, 3, 3, 32, 32, BEZIER, BEZIER);
+    Vec3_set(&controls[3][0],  2.0f, -1.0f, -4.0f);
+    Vec3_set(&controls[3][1],  2.0f,  2.0f, -2.0f);
+    Vec3_set(&controls[3][2],  2.0f,  3.0f,  0.0f);
+    Vec3_set(&controls[3][3],  2.0f,  2.0f,  2.0f);
+    Vec3_set(&controls[3][4],  2.0f, -1.0f,  4.0f);
+
+    Vec3_set(&controls[4][0],  4.0f, -1.0f, -4.0f);
+    Vec3_set(&controls[4][1],  4.0f,  1.0f, -2.0f);
+    Vec3_set(&controls[4][2],  4.0f,  2.0f,  0.0f);
+    Vec3_set(&controls[4][3],  4.0f,  1.0f,  2.0f);
+    Vec3_set(&controls[4][4],  4.0f, -1.0f,  4.0f);
+
+    Surface3D * surface = Surface3D_init(controls, 5, 5, 200, 200, BEZIER, BEZIER);
 
     Vec3 * obj_color = (Vec3 *) calloc(1, sizeof(Vec3));
     Vec3 * obj_specular_color = (Vec3 *) calloc(1, sizeof(Vec3));
-    Vec3_set(obj_color, 0.8, 0.10, 0.10); 
-    Vec3_set(obj_specular_color, 0.8, 0.1, 0.1);
+    Vec3_set(obj_color, 0.8, 0.60, 0.60); 
+    Vec3_set(obj_specular_color, 0.75, 0.5, 0.5);
 
-    Object * obj = Surface3D_obejctify(surface, obj_color, obj_specular_color, 1.0f, 0.1f);
+    Object * obj = Surface3D_obejctify(surface, obj_color, obj_specular_color, 1.0f, 0.25f);
 
     Buffer * buffer_0 = Buffer_init(obj);
 
