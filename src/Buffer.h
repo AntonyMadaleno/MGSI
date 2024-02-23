@@ -39,12 +39,13 @@ typedef struct Buffer
 Buffer * Buffer_init(Object * obj);
 
 /**
- * @brief 
+ * @brief update VAO, VBO and EBO
  * 
- * @param obj 
- * @return void
+ * @param obj
+ * @param buffer
+ * @return void 
  */
-void Buffer_bind(Buffer * buf);
+void Buffer_update(Object * obj, Buffer * buf);
 
 /**
  * @brief 
@@ -52,6 +53,14 @@ void Buffer_bind(Buffer * buf);
  * @param obj 
  * @return void
  */
-void Buffer_draw(Buffer * buf);
+void Buffer_bind(const Buffer * buf);
+
+/**
+ * @brief 
+ * 
+ * @param obj 
+ * @return void
+ */
+void Buffer_draw(const Buffer * buf);
 
 #endif

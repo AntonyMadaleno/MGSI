@@ -7,10 +7,9 @@
 #define M_PI 3.1415926535897932384626433832795
 #endif
 
-Sphere * Sphere_init(Vec3 * position, float rx, float ry, float rz)
+Sphere * Sphere_init(float rx, float ry, float rz)
 {
     Sphere * s = (Sphere *) calloc(1, sizeof(Sphere) );
-    s->position = position;
     s->rx = rx;
     s->ry = ry;
     s->rz = rz;
@@ -53,19 +52,20 @@ void * thread_drawParallel(void * args)
     {
         //vertex
         float alpha = ((float) i) / ((float) m) * 2 * M_PI;
-        o->vertexBuffer[(offset + i) * size + 0] = s->position->x + s->rx * cosf( theta ) * cosf( alpha );
-        o->vertexBuffer[(offset + i) * size + 2] = s->position->z + s->rz * cosf( theta ) * sinf( alpha );
-        o->vertexBuffer[(offset + i) * size + 1] = s->position->y + s->ry * sinf( theta );
 
-        o->vertexBuffer[(offset + i) * size + 3] = o->vertexBuffer[(offset + i) * size + 0] - s->position->x;
-        o->vertexBuffer[(offset + i) * size + 4] = o->vertexBuffer[(offset + i) * size + 1] - s->position->y;
-        o->vertexBuffer[(offset + i) * size + 5] = o->vertexBuffer[(offset + i) * size + 2] - s->position->z;
+        o->vertexBuffer[(offset + i) * size + 0]  = s->rx * cosf( theta ) * cosf( alpha );
+        o->vertexBuffer[(offset + i) * size + 2]  = s->rz * cosf( theta ) * sinf( alpha );
+        o->vertexBuffer[(offset + i) * size + 1]  = s->ry * sinf( theta );
 
-        o->vertexBuffer[(offset + i) * size + 6] = color->x;
-        o->vertexBuffer[(offset + i) * size + 7] = color->y;
-        o->vertexBuffer[(offset + i) * size + 8] = color->z;
+        o->vertexBuffer[(offset + i) * size + 3]  = o->vertexBuffer[(offset + i) * size + 0];
+        o->vertexBuffer[(offset + i) * size + 4]  = o->vertexBuffer[(offset + i) * size + 1];
+        o->vertexBuffer[(offset + i) * size + 5]  = o->vertexBuffer[(offset + i) * size + 2];
 
-        o->vertexBuffer[(offset + i) * size + 9] = specular->x;
+        o->vertexBuffer[(offset + i) * size + 6]  = color->x;
+        o->vertexBuffer[(offset + i) * size + 7]  = color->y;
+        o->vertexBuffer[(offset + i) * size + 8]  = color->z;
+
+        o->vertexBuffer[(offset + i) * size + 9]  = specular->x;
         o->vertexBuffer[(offset + i) * size + 10] = specular->y;
         o->vertexBuffer[(offset + i) * size + 11] = specular->z;
 
@@ -120,7 +120,7 @@ Object * Sphere_generateSurface(
 
     //CREATE POLES
     Vec3 * north = (Vec3 *) calloc(1, sizeof(Vec3) );     
-    Vec3_set(north, sphere->position->x, sphere->position->y + sphere->ry, sphere->position->z);
+    Vec3_set(north, 0.0f, sphere->ry, 0.0f);
 
     unsigned int size = 14;
 
@@ -128,9 +128,9 @@ Object * Sphere_generateSurface(
     obj->vertexBuffer[(obj->n_points - 1) * size - 0]  = north->z;
     obj->vertexBuffer[(obj->n_points - 1) * size + 1]  = north->y;
 
-    obj->vertexBuffer[(obj->n_points - 1) * size + 2]  = north->x - sphere->position->x;
-    obj->vertexBuffer[(obj->n_points - 1) * size + 3]  = north->z - sphere->position->z;
-    obj->vertexBuffer[(obj->n_points - 1) * size + 4]  = north->y - sphere->position->y;
+    obj->vertexBuffer[(obj->n_points - 1) * size + 2]  = north->x;
+    obj->vertexBuffer[(obj->n_points - 1) * size + 3]  = north->z;
+    obj->vertexBuffer[(obj->n_points - 1) * size + 4]  = north->y;
 
     obj->vertexBuffer[(obj->n_points - 1) * size + 5]  = color->x;
     obj->vertexBuffer[(obj->n_points - 1) * size + 6]  = color->y;
@@ -144,15 +144,15 @@ Object * Sphere_generateSurface(
     obj->vertexBuffer[(obj->n_points - 1) * size + 12] = reflection;
 
     Vec3 * south = (Vec3 *) calloc(1, sizeof(Vec3) );
-    Vec3_set(south, sphere->position->x, sphere->position->y - sphere->ry, sphere->position->z);
+    Vec3_set(south, 0.0, sphere->ry, 0.0);
 
     obj->vertexBuffer[0]  = south->x;
     obj->vertexBuffer[1]  = south->z;
     obj->vertexBuffer[2]  = south->y;
 
-    obj->vertexBuffer[3]  = south->x - sphere->position->x;
-    obj->vertexBuffer[4]  = south->z - sphere->position->z;
-    obj->vertexBuffer[5]  = south->y - sphere->position->y;
+    obj->vertexBuffer[3]  = south->x;
+    obj->vertexBuffer[4]  = south->z;
+    obj->vertexBuffer[5]  = south->y;
 
     obj->vertexBuffer[6]  = color->x;
     obj->vertexBuffer[7]  = color->y;

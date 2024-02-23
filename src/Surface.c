@@ -131,62 +131,7 @@ Surface3D * Surface3D_init(
 
 }
 
-typedef struct Thread_args
-{
-    Surface3D * s;
-    Object * obj;
-    Vec3 * color;
-    Vec3 * specular_color;
-    float * shininess;
-    float * reflection;
-    unsigned char * layout;
-    unsigned char * lsize;
-    unsigned short i;
-} Thread_args;
 
-static void * thread_objectify(void * t_args)
-{
-    Thread_args * td = (Thread_args *) t_args;
-
-    for (unsigned short j = 0; j < td->s->M; j++)
-    {
-        //POSITION
-        td->obj->vertexBuffer[(* td->lsize) * (td->i * td->s->M + j) + 0] = td->s->data[3 * (td->i * td->s->M + j) + 0];
-        td->obj->vertexBuffer[(* td->lsize) * (td->i * td->s->M + j) + 1] = td->s->data[3 * (td->i * td->s->M + j) + 1];
-        td->obj->vertexBuffer[(* td->lsize) * (td->i * td->s->M + j) + 2] = td->s->data[3 * (td->i * td->s->M + j) + 2];
-
-        //NORMAL
-        td->obj->vertexBuffer[(* td->lsize) * (td->i * td->s->M + j) + 3] = td->s->normals[td->i][j].x;
-        td->obj->vertexBuffer[(* td->lsize) * (td->i * td->s->M + j) + 4] = td->s->normals[td->i][j].y;
-        td->obj->vertexBuffer[(* td->lsize) * (td->i * td->s->M + j) + 5] = td->s->normals[td->i][j].z;
-
-        //COLORS PARAMETERS
-        td->obj->vertexBuffer[(* td->lsize) * (td->i * td->s->M + j) + 6] = td->color->x;
-        td->obj->vertexBuffer[(* td->lsize) * (td->i * td->s->M + j) + 7] = td->color->y;
-        td->obj->vertexBuffer[(* td->lsize) * (td->i * td->s->M + j) + 8] = td->color->z;
-
-        td->obj->vertexBuffer[(* td->lsize) * (td->i * td->s->M + j) + 9]  = td->specular_color->x;
-        td->obj->vertexBuffer[(* td->lsize) * (td->i * td->s->M + j) + 10] = td->specular_color->y;
-        td->obj->vertexBuffer[(* td->lsize) * (td->i * td->s->M + j) + 11] = td->specular_color->z;
-
-        td->obj->vertexBuffer[(* td->lsize) * (td->i * td->s->M + j) + 12] = * ( td->shininess );
-        td->obj->vertexBuffer[(* td->lsize) * (td->i * td->s->M + j) + 13] = * ( td->reflection );
-
-        if (td->i < td->s->N - 2 && j < td->s->M - 2)
-        {
-            td->obj->indexBuffer[(td->i * td->s->M + j) * 6 + 0] = td->i * td->s->M + j;
-            td->obj->indexBuffer[(td->i * td->s->M + j) * 6 + 1] = (td->i+1) * td->s->M + j;
-            td->obj->indexBuffer[(td->i * td->s->M + j) * 6 + 2] = (td->i+1) * td->s->M + ( (j+1) % td->s->M );
-
-            td->obj->indexBuffer[(td->i * td->s->M + j) * 6 + 3] = td->i * td->s->M + j;
-            td->obj->indexBuffer[(td->i * td->s->M + j) * 6 + 4] = (td->i+1) * td->s->M + ( (j+1) % td->s->M );
-            td->obj->indexBuffer[(td->i * td->s->M + j) * 6 + 5] = td->i * td->s->M + ( (j+1) % td->s->M );
-        }
-
-    }
-
-    return NULL;
-}
 
 Object * Surface3D_obejctify(Surface3D * s, Vec3 * color, Vec3 * specular_color, float shininess, float reflection)
 {
@@ -212,38 +157,45 @@ Object * Surface3D_obejctify(Surface3D * s, Vec3 * color, Vec3 * specular_color,
         ((unsigned int) s->N - 1) * ((unsigned int) s->M - 1) * 2
     );
 
-    pthread_t * threads = (pthread_t *) calloc( s->N , sizeof(pthread_t) );
-    if (!threads) {
-        fprintf(stderr, "Error: Memory allocation failed for threads.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    Thread_args * t_args = (Thread_args *) calloc( s->N , sizeof(Thread_args));
-    if (!t_args) {
-        fprintf(stderr, "Error: Memory allocation failed for threads arguments.\n");
-        exit(EXIT_FAILURE);
-    }
-
     for (unsigned short i = 0; i < s->N; i++)
     {
-        t_args[i].color = color;
-        t_args[i].layout = layout;
-        t_args[i].lsize = &layout_size;
-        t_args[i].obj = obj;
-        t_args[i].reflection = &reflection;
-        t_args[i].shininess = &shininess;
-        t_args[i].specular_color = specular_color;
-        t_args[i].s = s;
-        t_args[i].i = i;
+        for (unsigned short j = 0; j < s->M; j++)
+        {
+            //POSITION
+            obj->vertexBuffer[layout_size * (i * s->M + j) + 0] = s->data[3 * (i * s->M + j) + 0];
+            obj->vertexBuffer[layout_size * (i * s->M + j) + 1] = s->data[3 * (i * s->M + j) + 1];
+            obj->vertexBuffer[layout_size * (i * s->M + j) + 2] = s->data[3 * (i * s->M + j) + 2];
 
-        pthread_create(&threads[i], NULL, thread_objectify, (void *) &t_args[i]);
+            //NORMAL
+            obj->vertexBuffer[layout_size * (i * s->M + j) + 3] = s->normals[i][j].x;
+            obj->vertexBuffer[layout_size * (i * s->M + j) + 4] = s->normals[i][j].y;
+            obj->vertexBuffer[layout_size * (i * s->M + j) + 5] = s->normals[i][j].z;
+
+            //COLORS PARAMETERS
+            obj->vertexBuffer[layout_size * (i * s->M + j) + 6] = color->x;
+            obj->vertexBuffer[layout_size * (i * s->M + j) + 7] = color->y;
+            obj->vertexBuffer[layout_size * (i * s->M + j) + 8] = color->z;
+
+            obj->vertexBuffer[layout_size * (i * s->M + j) + 9]  = specular_color->x;
+            obj->vertexBuffer[layout_size * (i * s->M + j) + 10] = specular_color->y;
+            obj->vertexBuffer[layout_size * (i * s->M + j) + 11] = specular_color->z;
+
+            obj->vertexBuffer[layout_size * (i * s->M + j) + 12] = shininess;
+            obj->vertexBuffer[layout_size * (i * s->M + j) + 13] = reflection;
+
+            if (i < s->N - 2 && j < s->M - 2)
+            {
+                obj->indexBuffer[(i * s->M + j) * 6 + 0] = i * s->M + j;
+                obj->indexBuffer[(i * s->M + j) * 6 + 1] = (i+1) * s->M + j;
+                obj->indexBuffer[(i * s->M + j) * 6 + 2] = (i+1) * s->M + ( (j+1) % s->M );
+
+                obj->indexBuffer[(i * s->M + j) * 6 + 3] = i * s->M + j;
+                obj->indexBuffer[(i * s->M + j) * 6 + 4] = (i+1) * s->M + ( (j+1) % s->M );
+                obj->indexBuffer[(i * s->M + j) * 6 + 5] = i * s->M + ( (j+1) % s->M );
+            }
+
+        }
     }
-
-    for (unsigned short i = 0; i < s->N; i++)
-        pthread_join(threads[i], NULL);
-
-    free(t_args);
-    free(threads);
 
     return obj;
 

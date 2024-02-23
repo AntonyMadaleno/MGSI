@@ -21,13 +21,13 @@ Object * Object_init(const unsigned int n_points, const unsigned char n_attribut
 
     obj->vertexBuffer = (float *) calloc(size * obj->n_points ,sizeof(float) );
     if (!obj->vertexBuffer) {
-        fprintf(stderr, "Error: Memory allocation failed for buffer array.\n");
+        fprintf(stderr, "Error: Memory allocation failed for vertex buffer array.\n");
         exit(EXIT_FAILURE);
     }
 
     obj->indexBuffer = (unsigned int *) calloc(3 * obj->n_faces ,sizeof(unsigned int) );
     if (!obj->indexBuffer) {
-        fprintf(stderr, "Error: Memory allocation failed for buffer array.\n");
+        fprintf(stderr, "Error: Memory allocation failed for index buffer array.\n");
         exit(EXIT_FAILURE);
     }    
 

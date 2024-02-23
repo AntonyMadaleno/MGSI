@@ -17,16 +17,35 @@
 
 typedef struct Sphere
 {
-    Vec3 * position;
     float rx;
     float ry;
     float rz;
 } Sphere;
 
+/**
+ * @brief 
+ * 
+ * @param rx 
+ * @param ry 
+ * @param rz 
+ * @return Sphere* 
+ */
+Sphere * Sphere_init(float rx, float ry, float rz);
 
-Sphere * Sphere_init(Vec3 * position, float rx, float ry, float rz);
+/**
+ * @brief 
+ * 
+ * @param sphere 
+ * @param meridian 
+ * @param parallel 
+ * @param color 
+ * @param specular 
+ * @param reflection 
+ * @param shininess 
+ * @return Object *
+ */
+Object * Sphere_generateSurface (
 
-Object * Sphere_generateSurface(
     Sphere * sphere,
     unsigned char meridian,
     unsigned char parallel,
@@ -34,5 +53,6 @@ Object * Sphere_generateSurface(
     Vec3 * specular,
     float reflection,
     float shininess
+
 );
 
