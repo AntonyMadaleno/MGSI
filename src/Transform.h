@@ -25,6 +25,13 @@ typedef struct Transform
     glm::vec3 scale;
 } Transform;
 
+typedef struct IKSolver
+{
+    Transform ** transforms_initial;
+    glm::vec3 target;
+    unsigned char n_transform;
+} IKSolver;
+
 /**
  * @brief Create an empty transform (better use for debug only)
  * 
@@ -57,4 +64,31 @@ glm::mat4 Transform_getMatrix(const Transform *);
  * @param v2  ending vector
  * @return glm::quat 
  */
-glm::quat Rotation_from2vec(const glm::vec3 v1, const glm::vec3 v2);
+glm::quat Rotation_from2vec(glm::vec3 v1, glm::vec3 v2);
+
+/**
+ * @brief 
+ * @param t  Interpolation time
+ * @param T1 Transformation at t = 0.0
+ * @param T2 Transformation at t = 1.0
+ * @param linear use linear instead of slerp for quaternion
+ * @return Transform * interpolated transform
+ */
+Transform * Transform_interpolate(const float t, const Transform * T1, const Transform * T2, const bool linear);
+
+/**
+ * @brief 
+ * 
+ * @param T_init Transforms at T0
+ * @param target Effector Target position
+ * @return IKSolver* 
+ */
+IKSolver * IKSolver_init(Transform ** T_init, glm::vec3 target, unsigned char n_transform);
+
+/**
+ * @brief Solve the IK by cyclic
+ * 
+ * @param IK 
+ * @return Transform** 
+ */
+Transform ** IKSolver_solve(IKSolver * IK);

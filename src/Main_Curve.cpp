@@ -98,7 +98,7 @@ int main() {
     glm::vec3 * lights_Positions = (glm::vec3 *) calloc(light_count , sizeof(glm::vec3));
 
     lights_Colors[0]    = glm::vec3( 1.0f,  1.0f,  1.0f);
-    lights_Positions[0] = glm::vec3( 0.0f,  5.0f,  0.25f);
+    lights_Positions[0] = glm::vec3( 0.0f,  5.0f,  1.0f);
 
     //lights_Colors[1]    = glm::vec3( 1.0f,  1.0f,  1.0f);
     //lights_Positions[1] = glm::vec3(-5.0f,  5.0f,  -5.0f);
@@ -139,6 +139,39 @@ int main() {
     Texture * skybox = Texture_init(fpath);
     shader.setInt("u_environmentMap", skybox->ID);
 
+    // Define control points for the Catmull-Rom spline
+    Vec3 * control_points = (Vec3 *) calloc(11, sizeof(Vec3));
+
+    Vec3_set(&control_points[0],  -6.0f,  0.0f,   0.0f); 
+    Vec3_set(&control_points[1],  -4.0f,  0.0f,  -1.0f);
+    Vec3_set(&control_points[2],  -3.0f,  1.0f,   0.0f);
+    Vec3_set(&control_points[3],  -2.0f,  0.0f,   1.0f);
+    Vec3_set(&control_points[4],  -1.0f, -1.0f,   0.0f);
+    Vec3_set(&control_points[5],   0.0f,  0.0f,  -1.0f);
+    Vec3_set(&control_points[6],   1.0f,  1.0f,   0.0f);
+    Vec3_set(&control_points[7],   2.0f,  0.0f,   1.0f);
+    Vec3_set(&control_points[8],   3.0f, -1.0f,   0.0f);
+    Vec3_set(&control_points[9],   4.0f,  0.0f,  -1.0f);
+    Vec3_set(&control_points[10],  6.0f,  0.0f,   0.0f);
+
+    // Create a Curve3D structure to hold the result
+    Curve3D * curve = Curve3D_init(control_points, 11, 16000, CATMULL_ROM);
+    Curve3D_calculateTNB(curve);
+    free(control_points);
+
+    Vec3 * obj_color = (Vec3 *) calloc(1, sizeof(Vec3));
+    Vec3 * obj_specular_color = (Vec3 *) calloc(1, sizeof(Vec3));
+    Vec3_set(obj_color, 0.8, 0.44, 0.32); 
+    Vec3_set(obj_specular_color, 0.32, 0.32, 0.8); 
+    Object * obj = Curve3D_generateSurface(curve, 255, obj_color, obj_specular_color, 1.0f, 0.25f, 0.25f);
+
+    free(obj_color);
+    free(obj_specular_color);
+
+    Buffer * buffer_0 = Buffer_init(obj);
+
+/**
+
     Vec3 ** controls = (Vec3 **) calloc(3, sizeof(Vec3 *));
     
     controls[0] = (Vec3 *) calloc(3, sizeof(Vec3));
@@ -161,12 +194,13 @@ int main() {
 
     Vec3 * obj_color = (Vec3 *) calloc(1, sizeof(Vec3));
     Vec3 * obj_specular_color = (Vec3 *) calloc(1, sizeof(Vec3));
-    Vec3_set(obj_color, 0.8f, 0.44f, 0.32f); 
-    Vec3_set(obj_specular_color, 0.32f, 0.32f, 0.8f);
+    Vec3_set(obj_color, 0.4, 0.2, 0.1); 
+    Vec3_set(obj_specular_color, 1.0, 1.0, 1.0);
 
-    Object * obj = Surface3D_obejctify(surface, obj_color, obj_specular_color, 32.0f, 0.10f);
+    Object * obj = Surface3D_obejctify(surface, obj_color, obj_specular_color, 1.0f, 0.1f);
 
     Buffer * buffer_0 = Buffer_init(obj);
+**/
 
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
